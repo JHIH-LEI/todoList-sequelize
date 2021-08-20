@@ -19,8 +19,33 @@ app.use(session({
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(methodOverride('_method'))
 
+//主頁
 app.get('/', (req, res) => {
   res.send('hi')
+})
+
+//登陸頁
+app.get('/users/login', (req, res) => {
+  res.render('login')
+})
+
+//請求登陸
+app.post('/users/login', (req, res) => {
+  res.send('login')
+})
+//註冊頁
+app.get('/users/register', (req, res) => {
+  res.render('register')
+})
+
+//請求註冊
+app.post('/users/register', (req, res) => {
+  res.send('register')
+})
+
+//登出
+app.get('/users/logout', (req, res) => {
+  res.send('logout')
 })
 
 app.listen(PORT, () => {
