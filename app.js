@@ -40,7 +40,9 @@ app.get('/users/register', (req, res) => {
 
 //請求註冊
 app.post('/users/register', (req, res) => {
-  res.send('register')
+  const { name, email, password, confirmPassword } = req.body
+  User.create({ name, email, password })
+    .then(user => res.redirect('/'))
 })
 
 //登出
