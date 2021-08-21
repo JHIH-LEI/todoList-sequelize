@@ -4,6 +4,6 @@ module.exports = {
       return next()
     }
     console.log('請先登陸在使用')
-    res.render('login')
+    res.redirect('/users/login')
   }
 }
