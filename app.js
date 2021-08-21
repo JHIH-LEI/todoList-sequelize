@@ -6,6 +6,9 @@ const methodOverride = require('method-override')
 const session = require('express-session')
 
 const PORT = 3000
+const db = require('./models')
+const Todo = db.Todo
+const User = db.User
 
 app.engine('hbs', exphbs({ defaultLayout: 'main', extname: '.hbs' }))
 app.set('view engine', 'hbs')
@@ -21,7 +24,12 @@ app.use(methodOverride('_method'))
 
 //主頁
 app.get('/', (req, res) => {
-  res.send('hi')
+  return Todo.findAll({
+    raw: true,
+    nest: true
+  })
+    .then((todos) => { return res.render('index', { todos: todos }) })
+    .catch((error) => { return res.status(422).json(error) })
 })
 
 //登陸頁
