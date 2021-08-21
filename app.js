@@ -7,6 +7,7 @@ const session = require('express-session')
 const bcrypt = require('bcryptjs')
 const usePassport = require('./config/passport')
 const passport = require('passport')
+const { authenticator } = require('./middleware/auth')
 
 const PORT = 3000
 const db = require('./models')
@@ -26,7 +27,7 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(methodOverride('_method'))
 usePassport(app)
 //主頁
-app.get('/', (req, res) => {
+app.get('/', authenticator, (req, res) => {
   return Todo.findAll({
     raw: true,
     nest: true
