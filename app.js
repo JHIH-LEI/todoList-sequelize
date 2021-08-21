@@ -11,6 +11,8 @@ const { authenticator } = require('./middleware/auth')
 
 const PORT = 3000
 const db = require('./models')
+const user = require('./models/user')
+const todo = require('./models/todo')
 const Todo = db.Todo
 const User = db.User
 
@@ -30,16 +32,58 @@ usePassport(app)
 app.get('/', authenticator, (req, res) => {
   return Todo.findAll({
     raw: true,
-    nest: true
+    nest: true,
+    where: { UserId: req.user.id }
   })
     .then((todos) => { return res.render('index', { todos: todos }) })
     .catch((error) => { return res.status(422).json(error) })
+})
+//新增todo頁面
+app.get('/todos/new', (req, res) => {
+  res.render('new')
+})
+//新增todo
+app.post('/todos', (req, res) => {
+  const { name } = req.body
+  Todo.create({ name, UserId: req.user.id })
+  res.redirect('/')
+})
+//刪除todo
+app.delete('/todos/:id', (req, res) => {
+  const id = req.params.id
+  const UserId = req.user.id
+  Todo.findOne({ where: { UserId, id } })
+    .then(todo => todo.destroy())
+    .then(() => res.redirect('/'))
+})
+//進入編輯頁
+app.get('/todos/:id/edit', (req, res) => {
+  const id = req.params.id
+  const UserId = req.user.id
+  Todo.findOne({ where: { id, UserId } })
+    .then(todo => res.render('edit', { todo: todo.toJSON() }))
+})
+// 編輯todo
+app.put('/todos/:id', (req, res) => {
+  const id = req.params.id
+  const { name } = req.body
+  const isDone = req.body.isDone ? true : false
+  const UserId = req.user.id
+  Todo.findOne({ where: { id, UserId } })
+    .then(todo => {
+      todo.name = name
+      todo.isDone = isDone
+      todo.save()
+    })
+    .then(() => res.redirect(`/todos/${id}`))
+    .catch(err => console.log(err))
 })
 
 //詳細頁
 app.get('/todos/:id', (req, res) => {
   const id = req.params.id
-  return Todo.findByPk(id)
+  const UserId = req.user.id
+  return Todo.findOne({ where: { id, UserId } })
     .then(todo => res.render('detail', { todo: todo.toJSON() }))
     .catch(err => console.log(err))
 })
