@@ -74,3 +74,14 @@ root@example.com
 ```
 12345678
 ```
+
+# Docker
+再產生種子資料之前，可以先利用Docker使用app.
+請先確保你有下載Docker 並且已經開啟Docker server.
+```
+Docker build . -t todolist:demo
+```
+
+```
+Docker run -p 3000:3000 todolist:demo --rm
+```
